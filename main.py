@@ -16,11 +16,11 @@ capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 color_map = {}
 
 while True:
-    # frame capture
+    
     _, frame = capture.read() 
     frame = cv2.flip(frame,1)
 
-    # object detection
+    
     class_ids, confidences, boxes = model.detect(frame)
     for id, confidence, box in zip(class_ids, confidences, boxes):
         x, y, w, h = box
@@ -37,14 +37,14 @@ while True:
       
       
     cv2.imshow('Video Capture', frame)
-    key = cv2.waitKey(1) # freezes frame for 1ms
+    key = cv2.waitKey(1) 
 
     match(key):
-        case 27: # esc key to exit
+        case 27: 
             capture.release()
             cv2.destroyAllWindows()
 
-        case 13: # enter key to reset colors
+        case 13: 
             color_map = {}
     
         
