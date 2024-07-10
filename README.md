@@ -55,6 +55,7 @@ while True:
 
         case 13: 
             color_map = {}
+			
 # Performance and Optimization
 YOLO is optimized for real-time object detection and can run efficiently on a GPU.
 For better performance, ensure that OpenCV is built with GPU support.
