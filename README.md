@@ -1,6 +1,5 @@
 # OpenCV-Object-Detection <img src="https://skillicons.dev/icons?i=python"/>
-Real time object detection using Computer Vision and the OpenCV library
-Introduction
+# Introduction
 This project demonstrates an Object Detection Model using Python, OpenCV, and YOLO (You Only Look Once). YOLO is a real-time object detection system capable of processing images and detecting objects in one pass through a neural network.
 
 Setup
