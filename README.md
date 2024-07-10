@@ -2,18 +2,7 @@
 # Introduction
 This project demonstrates an Object Detection Model using Python, OpenCV, and YOLO (You Only Look Once). YOLO is a real-time object detection system capable of processing images and detecting objects in one pass through a neural network.
 
-Setup
-Install Dependencies:
-
-bash
-Copy code
-pip install opencv-python opencv-python-headless
-Download YOLO Files:
-
-Download the YOLOv3 or YOLOv4 weights from the official YOLO website.
-Download the corresponding configuration file (.cfg) and the COCO names file (coco.names).
-Usage
-Step 1: Load YOLO
+## Step 1: Load YOLO
 Load the YOLO network using OpenCV:
 
 python
