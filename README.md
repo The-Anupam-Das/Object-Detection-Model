@@ -5,90 +5,65 @@ This project demonstrates an Object Detection Model using Python, OpenCV, and YO
 ## Step 1: Load YOLO
 Load the YOLO network using OpenCV:
 
-python
-Copy code
 import cv2
+from random import randint
+dnn = cv2.dnn.readNet('yolov4-tiny.weights', 'yolov4-tiny.cfg')
+model = cv2.dnn_DetectionModel(dnn)
+model.setInputParams(size=(416, 416), scale=1/255, swapRB=True)
 
-# Load YOLO
-net = cv2.dnn.readNet("yolov3.weights", "yolov3.cfg")
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
-Step 2: Load and Preprocess Image
-Read and preprocess the image:
+## Step 2: Load and Preprocess
+with open('classes.txt') as f:
+    classes = f.read().strip().splitlines()
 
-python
-Copy code
-# Load image
-img = cv2.imread("image.jpg")
-height, width, channels = img.shape
+capture = cv2.VideoCapture(0)
+capture.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+capture.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-# Preprocessing
-blob = cv2.dnn.blobFromImage(img, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
-net.setInput(blob)
-Step 3: Object Detection
+## Step 3: Object Detection
 Perform object detection:
 
-python
-Copy code
-# Run detection
-outs = net.forward(output_layers)
+color_map = {}
 
-# Analyze detections
-class_ids = []
-confidences = []
-boxes = []
+while True:
+    
+    _, frame = capture.read() 
+    frame = cv2.flip(frame,1)
 
-for out in outs:
-    for detection in out:
-        scores = detection[5:]
-        class_id = np.argmax(scores)
-        confidence = scores[class_id]
-        if confidence > 0.5:
-            # Object detected
-            center_x = int(detection[0] * width)
-            center_y = int(detection[1] * height)
-            w = int(detection[2] * width)
-            h = int(detection[3] * height)
-            
-            # Rectangle coordinates
-            x = int(center_x - w / 2)
-            y = int(center_y - h / 2)
-            
-            boxes.append([x, y, w, h])
-            confidences.append(float(confidence))
-            class_ids.append(class_id)
-Step 4: Draw Bounding Boxes
-Draw bounding boxes around detected objects:
+    
+    class_ids, confidences, boxes = model.detect(frame)
+    for id, confidence, box in zip(class_ids, confidences, boxes):
+        x, y, w, h = box
+        obj_class = classes[id]
 
-python
-Copy code
-# Load class labels
-with open("coco.names", "r") as f:
-    classes = [line.strip() for line in f.readlines()]
+        if obj_class not in color_map:
+            color = (randint(0, 255), randint(0, 255), randint(0, 255))
+            color_map[obj_class] = color
+        else:
+            color = color_map[obj_class]
 
-# Non-max suppression to remove overlapping boxes
-indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        cv2.putText(frame, f'{obj_class.title()} {format(confidence, ".2f")}', (x, y-10), cv2.FONT_HERSHEY_DUPLEX, 1, color, 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+      
+      
+    cv2.imshow('Video Capture', frame)
+    key = cv2.waitKey(1) 
 
-font = cv2.FONT_HERSHEY_PLAIN
-for i in range(len(boxes)):
-    if i in indexes:
-        x, y, w, h = boxes[i]
-        label = str(classes[class_ids[i]])
-        color = (0, 255, 0)
-        cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
-        cv2.putText(img, label, (x, y - 10), font, 1, color, 2)
+    match(key):
+        case 27: 
+            capture.release()
+            cv2.destroyAllWindows()
 
-# Show image
-cv2.imshow("Image", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-Performance and Optimization
+        case 13: 
+            color_map = {}
+# Performance and Optimization
 YOLO is optimized for real-time object detection and can run efficiently on a GPU.
 For better performance, ensure that OpenCV is built with GPU support.
-Applications
+
+# Applications
 Surveillance and security systems
 Autonomous vehicles
 Robotics and automation
-Further Enhancements
+
+# Further Enhancements
 Fine-tune YOLO on custom datasets for specific object detection tasks.
 Experiment with different YOLO versions (e.g., YOLOv3, YOLOv4) for improved accuracy or speed.
